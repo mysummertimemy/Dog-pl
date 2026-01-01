@@ -1,0 +1,27 @@
+/* If Grey is a real party member: make room for the canon party! */
+
+IF
+	Global("C#Grey_SoDEndMove","bd6200",0) 
+	!Dead("C#Grey")  
+	InParty("C#Grey") 
+	InMyArea("C#Grey")
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+		SetGlobal("C#Grey_SoDEndMove","bd6200",1)
+		ActionOverride("C#Grey",LeaveParty())
+		SmallWait(10)
+		ActionOverride("C#Grey",MakeGlobalOverride())
+		ChangeEnemyAlly("C#Grey",FAMILIAR)
+		ActionOverride("C#Grey",AddFamiliar())
+		ActionOverride("C#Grey",SetDialog("C#GreyJ"))
+		ActionOverride("C#Grey",ChangeAIScript("DEFAULT",CLASS))
+//		ActionOverride("C#Grey",ChangeAIScript("FIGHTER2",CLASS))
+		ActionOverride("C#Grey",ChangeAIScript("",RACE))
+		ActionOverride("C#Grey",ChangeAIScript("",GENERAL))
+		ActionOverride("C#Grey",ChangeAIScript("",DEFAULT))	
+		SetGlobal("C#GreyJoined","GLOBAL",2)
+		SmallWait(10)
+		Continue()
+END
+

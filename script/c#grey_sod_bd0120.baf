@@ -1,0 +1,39 @@
+/* new game: Global("C#Grey_Exists","GLOBAL",0) */
+
+
+IF 
+	Global("C#Grey_Exists","GLOBAL",0)
+	NumInPartyLT(6)	
+THEN
+	RESPONSE #100
+		SetInterrupt(FALSE)
+            	SetGlobal("C#Grey_Exists","GLOBAL",6)
+	    	CreateCreature("C#Grey03",[780.1578],S)
+		ActionOverride("C#Grey",MakeGlobalOverride()) 
+		ActionOverride("C#Grey",JoinParty())
+		SetGlobal("C#GreyJoined","GLOBAL",1)
+		ActionOverride("C#Grey",SetGlobal("C#LevelUp","LOCALS",0))
+		SetInterrupt(TRUE)
+END
+
+IF 
+	Global("C#Grey_Exists","GLOBAL",0)
+	NumInParty(6)	
+THEN
+	RESPONSE #100
+		SetInterrupt(FALSE)
+            	SetGlobal("C#Grey_Exists","GLOBAL",6)
+	    	CreateCreature("C#Grey03",[780.1578],S)
+		ActionOverride("C#Grey",MakeGlobalOverride())
+		SetGlobal("C#GreyJoined","GLOBAL",2)
+		ActionOverride("C#Grey",ChangeEnemyAlly(Myself, FAMILIAR))
+		ActionOverride("C#Grey",SetDialog("c#greyj"))
+		ActionOverride("C#Grey",AddFamiliar())
+		ActionOverride("C#Grey",ChangeAIScript("",CLASS))
+//		ActionOverride("C#Grey",ChangeAIScript("FIGHTER2",CLASS))
+		ActionOverride("C#Grey",ChangeAIScript("",RACE))
+		ActionOverride("C#Grey",ChangeAIScript("",GENERAL))
+		ActionOverride("C#Grey",ChangeAIScript("",DEFAULT))
+		ActionOverride("C#Grey",SetGlobal("C#LevelUp","LOCALS",0))
+		SetInterrupt(TRUE)	
+END
