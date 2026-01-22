@@ -1,8 +1,0 @@
-IF
-Global("C#Grey_TurExists","c#GR11",0)
-THEN
-RESPONSE #100
-CreateCreature("c#gr1tur",[500.300],4)
-SetGlobal("C#Grey_TurExists","c#GR11",1)
-END
-
