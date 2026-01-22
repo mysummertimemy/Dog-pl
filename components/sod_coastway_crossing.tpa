@@ -1,0 +1,212 @@
+////////////////////////////////////////////////////
+// Optional quest to scout the Coast Way Crossing //
+////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION sod_coastway_crossing BEGIN
+	// FUTURE: Allow for successfully saving the bridge (this may need its own mod)
+	//		This would allow for Boareskyr Bridge to be skipped
+	//		Will have Jaheira and wassisname approach PC after success to request aid for Bridgefort
+	//		Player will have to decide which to do first (or at all), in what order, and from which direction(s)
+	//		If heading to the coallition camp first, ie coming from the north:
+	//			will move the temple of Cyric to the north of the Boareskyr area
+	//			temple can be done and still skip Boareskyr
+	//			will need another teleportation circle on the north side of the river - replaces?  in addition to?
+	//				2 activation stones? - one for the southern circle, one for the northern
+	//		Can have a two-pronged attack, from both the north and the south
+
+	// #L_CWBridgeQuest global variable used as a means to track the progress of the quest
+	// Associated numbers in the 3ks are journal entry references
+	// 0 = Not started
+	// 1 = Warned to be on the look out 3000
+	// 2 = Locals have warned about the bridge being held but the PC hasn't seen it yet 3001
+	// 3 = PC has gotten close enough to the bridge to see it's held 3002
+	// 4 = Corwin has been informed (one way or another) that the bridge is being held by Caelar's forces and she's gathering more intel 3003-5 
+	// 5 = Using disguises to disarm the explosives on the bridge 3008,10 without or with password
+	// 6 = Using PC as bait to disarm the explosives on the bridge 3009,11 without or with password
+	// 97 = PC took on the bridge without the Flaming Fist 3012
+	// 98 = Flaming Fist botched the password 3013
+	// 99 = The charmed informant escaped and ruined the plan 3014
+	
+	// #L_CWBridgeRigged global variable used to track if PC knows the bridge is rigged with explosives 3006-7
+	// #L_CWBridgeExplosivesTalk global variable used to track if PC and Corwin have discussed the explosives
+	// #L_CWBridgePassword global variable used to track if FF know the password to gain access to the bridge
+	// #L_CWBridgeWarn global variable used to track how often the PC is warned by locals that bridge is held by Caelar..0 1 or 2
+	// #L_CWBridgeHailed area variable used to track if the disguised veteran has hailed the PC (start of cut scene)
+
+	// Set some strrefs to be used in dialogues depending up on the installed game
+	ACTION_IF GAME_IS ~eet~ BEGIN
+		OUTER_SET BRIDGE_HELD_1 = 252899
+		OUTER_SET BRIDGE_HELD_2 = 252903
+		OUTER_SET CORWIN_NEED_1 = 256087
+		OUTER_SET CORWIN_NEED_2 = 256088
+		OUTER_SET CORWIN_NEED_3 = 256089
+		OUTER_SET CORWIN_NEED_4 = 256090
+		OUTER_SET CORWIN_BRIDGEFORT = 235933
+		OUTER_SET KNOW_YOU_NOT = 204931	// Sound Gnome03
+	END ELSE BEGIN
+		OUTER_SET BRIDGE_HELD_1 = 52899
+		OUTER_SET BRIDGE_HELD_2 = 52903
+		OUTER_SET CORWIN_NEED_1 = 56087
+		OUTER_SET CORWIN_NEED_2 = 56088
+		OUTER_SET CORWIN_NEED_3 = 56089
+		OUTER_SET CORWIN_NEED_4 = 56090
+		OUTER_SET CORWIN_BRIDGEFORT = 35933
+		OUTER_SET KNOW_YOU_NOT = 4931
+	END
+	
+	// Disguised Flaming Fist
+	COPY_EXISTING ~bdfist26.CRE~ ~override/#LFFAss1.cre~
+		SAY NAME1 @1004	/* ~Disguised Flaming Fist Veteran~ */
+		SAY NAME2 @1004	/* ~Disguised Flaming Fist Veteran~ */
+		WRITE_LONG 0x0028 25344 // Animation = THIEF_MALE_HUMAN
+		WRITE_BYTE 0x002c 226 // Metal color = Metal normal - Eigengrau
+		WRITE_BYTE 0x002d 242 // Minor color = Thief Minor - Pale Olive
+		WRITE_BYTE 0x002e 241 // Major color = Thief Major - Olive
+		WRITE_BYTE 0x0030 228 // Leather color = Leather - Spectral Green
+		WRITE_BYTE 0x0031 244 // Armor color = Fighter Minor - Dark Cadet Gray
+		WRITE_ASCII SCRIPT_OVERRIDE ~#LFFAss1~ #8
+		WRITE_ASCII SCRIPT_GENERAL ~~ #8
+		WRITE_ASCII SCRIPT_RACE ~~ #8
+		WRITE_ASCII SCRIPT_CLASS ~~ #8
+		WRITE_ASCII SCRIPT_DEFAULT ~~ #8
+		WRITE_ASCII DEATHVAR ~#LFFAss1~ #32
+		WRITE_ASCII DIALOG ~#LFFAss1~ #8
+
+	COPY_EXISTING ~bdfist24.CRE~ ~override/#LFFAss2.cre~
+		SAY NAME1 @1006 /* ~Disguised Flaming Fist Healer~ */
+		SAY NAME2 @1006 /* ~Disguised Flaming Fist Healer~ */
+		WRITE_LONG 0x0028 25344 // Animation = THIEF_MALE_HUMAN
+		WRITE_BYTE 0x002c 226 // Metal color = Metal normal - Eigengrau
+		WRITE_BYTE 0x002d 242 // Minor color = Thief Minor - Pale Olive
+		WRITE_BYTE 0x002e 241 // Major color = Thief Major - Olive
+		WRITE_BYTE 0x0030 228 // Leather color = Leather - Spectral Green
+		WRITE_BYTE 0x0031 244 // Armor color = Fighter Minor - Dark Cadet Gray
+		WRITE_ASCII SCRIPT_OVERRIDE ~~ #8
+		WRITE_ASCII SCRIPT_GENERAL ~~ #8
+		WRITE_ASCII SCRIPT_RACE ~~ #8
+		WRITE_ASCII SCRIPT_CLASS ~~ #8
+		WRITE_ASCII SCRIPT_DEFAULT ~~ #8
+		WRITE_ASCII DEATHVAR ~#LFFAss2~ #32
+		WRITE_ASCII DIALOG ~~ #8
+
+	COPY_EXISTING ~bdfistm2.CRE~ ~override/#LFFAss3.cre~
+		SAY NAME1 @1005 /* ~Disguised Flaming Fist Battlemage~ */
+		SAY NAME2 @1005	/* ~Disguised Flaming Fist Battlemage~ */
+		WRITE_LONG 0x0028 25344 // Animation = THIEF_MALE_HUMAN
+		WRITE_BYTE 0x002c 226 // Metal color = Metal normal - Eigengrau
+		WRITE_BYTE 0x002d 242 // Minor color = Thief Minor - Pale Olive
+		WRITE_BYTE 0x002e 241 // Major color = Thief Major - Olive
+		WRITE_BYTE 0x0030 228 // Leather color = Leather - Spectral Green
+		WRITE_BYTE 0x0031 244 // Armor color = Fighter Minor - Dark Cadet Gray
+		WRITE_ASCII SCRIPT_OVERRIDE ~~ #8
+		WRITE_ASCII SCRIPT_GENERAL ~~ #8
+		WRITE_ASCII SCRIPT_RACE ~~ #8
+		WRITE_ASCII SCRIPT_CLASS ~~ #8
+		WRITE_ASCII SCRIPT_DEFAULT ~~ #8
+		WRITE_ASCII DEATHVAR ~#LFFAss3~ #32
+		WRITE_ASCII DIALOG ~~ #8
+		
+	// A spell I need for the cut scenes
+	COPY ~%mod_root%/objects/#LUNHAST.SPL~ ~override~
+
+   	// Define the journal entries to be used during the quest
+	ADD_JOURNAL @3000 @3001 @3002 @3003 @3004 @3005 @3006 @3007 @3008 @3009 @3010 @3011 @3012 @3013 @3014 @3015 USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+
+	// The normal bridge-go-boom scene should only start on our cue
+	COPY_EXISTING ~BD1000.BCS~ ~Override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~GlobalLT("bd_plot","global",145)~ ~GlobalLT("bd_plot","global",145) GlobalLT("#L_CWBridgeQuest","GLOBAL",5)~
+		END
+		
+	// Make sure the disguised Flaming Fist get past the barrier
+	WITH_TRA ~%tra_loc%/%s/sod_coastway_crossing.tra~ BEGIN
+		OUTER_SET STRREF_PROTECT_HERO = RESOLVE_STR_REF (@2131)
+	END
+	COPY_EXISTING ~BDCUT14.BCS~ ~Override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,MoveToPoint([3815.1005]))~ ~ActionOverride("#LFFAss1",MoveToPoint([3795.1045]) ActionOverride("#LFFAss2",MoveToPoint([3845.1080]) ActionOverride("#LFFAss3",MoveToPoint([3740.1130]) ActionOverride(Player2,MoveToPoint([3815.1005]))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,SetSequence(SEQ_DAMAGE))~ ~ActionOverride("#LFFAss1",SetSequence(SEQ_DAMAGE)) ActionOverride("#LFFAss2",SetSequence(SEQ_DAMAGE)) ActionOverride("#LFFAss3",SetSequence(SEQ_DAMAGE)) ActionOverride(Player2,SetSequence(SEQ_DAMAGE))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride("bdcutid",ReallyForceSpellRES("bdthrow",Player2))~ ~ActionOverride("bdcutid",ReallyForceSpellRES("bdthrow","#LFFAss1")) ActionOverride("bdcutid",ReallyForceSpellRES("bdthrow","#LFFAss2")) ActionOverride("bdcutid",ReallyForceSpellRES("bdthrow","#LFFAss3")) ActionOverride("bdcutid",ReallyForceSpellRES("bdthrow",Player2))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,JumpToPoint([3655.1135]))~ ~ActionOverride("#LFFAss1",JumpToPoint([3795.1045])) ActionOverride("#LFFAss2",JumpToPoint([3845.1080])) ActionOverride("#LFFAss3",JumpToPoint([3740.1130])) ActionOverride(Player2,JumpToPoint([3655.1135]))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,SetSequence(SEQ_AWAKE))~ ~ActionOverride("#LFFAss1",SetSequence(SEQ_AWAKE)) SmallWait(2) ActionOverride("#LFFAss2",SetSequence(SEQ_AWAKE)) SmallWait(2) ActionOverride("#LFFAss3",SetSequence(SEQ_AWAKE)) SmallWait(2) ActionOverride(Player2,SetSequence(SEQ_AWAKE))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,Face(NE))~ ~ActionOverride("#LFFAss1",Face(NE)) SmallWait(2) ActionOverride("#LFFAss2",Face(NE)) SmallWait(2) ActionOverride("#LFFAss3",Face(NE)) SmallWait(2) ActionOverride(Player2,Face(NE))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~EndCutSceneMode()~ ~Wait(1) DisplayStringHead("#LFFAss1",#%STRREF_PROTECT_HERO%) Wait(2) EndCutSceneMode()~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,FaceObject("bdwilhm"))~ ~END
+IF
+	!Global("#L_CWBridgeQuest","GLOBAL",5) !Global("#L_CWBridgeQuest","GLOBAL",6) !Global("#L_CWBridgeQuest","GLOBAL",98) !Global("#L_CWBridgeQuest","GLOBAL",99)
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+		ActionOverride(Player2,FaceObject("bdwilhm"))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player6,FaceObject("bdwilhm"))~ ~ActionOverride(Player6,FaceObject("bdwilhm"))
+END
+
+IF
+	True()
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)~
+		
+		END
+	COPY_EXISTING ~CUTSKIP.BCS~ ~Override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,JumpToPoint([3655.1135]))~ ~ActionOverride("#LFFAss1",JumpToPoint([3795.1045])) ActionOverride("#LFFAss2",JumpToPoint([3845.1080])) ActionOverride("#LFFAss3",JumpToPoint([3740.1130])) ActionOverride(Player2,JumpToPoint([3655.1135]))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,SetSequence(SEQ_AWAKE))~ ~ActionOverride("#LFFAss1",SetSequence(SEQ_AWAKE)) SmallWait(2) ActionOverride("#LFFAss2",SetSequence(SEQ_AWAKE)) SmallWait(2) ActionOverride("#LFFAss3",SetSequence(SEQ_AWAKE)) SmallWait(2) ActionOverride(Player2,SetSequence(SEQ_AWAKE))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player2,Face(NE))~ ~ActionOverride("#LFFAss1",Face(NE)) SmallWait(2) ActionOverride("#LFFAss2",Face(NE)) SmallWait(2) ActionOverride("#LFFAss3",Face(NE)) SmallWait(2) ActionOverride(Player2,Face(NE))~
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ActionOverride(Player1,JumpToPoint([4360.705]))~ ~ActionOverride("#LFFAss1",JumpToPoint([4255.690])) ActionOverride("#LFFAss2",JumpToPoint([4370.770])) ActionOverride("#LFFAss3",JumpToPoint([4195.720])) ActionOverride(Player1,JumpToPoint([4360.705]))~
+		END
+
+	// Make sure Corwin only talks to the PC on cue after the bridge is blown
+	COPY_EXISTING ~BDCORWIN.BCS~ ~Override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~Global("bd_plot","global",170)~ ~Global("bd_plot","global",170) GlobalLT("#L_CWBridgeQuest","GLOBAL",98)~
+		END
+		
+	// Compile the area scripts
+	EXTEND_TOP ~BD1000.BCS~ ~%mod_root%/scripts/sod_coastway_crossing_bd1000.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	EXTEND_TOP ~BD1200.BCS~ ~%mod_root%/scripts/sod_coastway_crossing_bd1200.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+
+	// Compile dialogues
+	COMPILE EVALUATE_BUFFER ~%mod_root%/dialogues/sod_coastway_crossing.d~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+
+	// New scrying pool cutscene
+	COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LCWBQ01.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	
+	// Disguised Flaming Fist Veteran's override script to have him start the cut scene
+	COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LFFAss1.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	
+	// Bridge infiltration cutscenes
+	COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LCWBQ02.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LCWBQ03.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LCWBQ04.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LCWBQ05.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	
+	// The surviving disguised FF flank the PC when speaking to Caelar
+	COPY_EXISTING ~BDCUT17.BCS~ ~override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~True()~ ~OR(2) !GlobalGT("#L_CWBridgeQuest","GLOBAL",97) Dead("#LFFAss1") OR(2) !GlobalGT("#L_CWBridgeQuest","GLOBAL",97) Dead("#LFFAss2") OR(2) !GlobalGT("#L_CWBridgeQuest","GLOBAL",97) Dead("#LFFAss3")~
+		END
+	EXTEND_TOP ~BDCUT17.BCS~ ~%mod_root%/scripts/sod_coastway_crossing_bdcut17.baf~ USING ~%tra_loc%/%s/sod_coastway_crossing.tra~
+	
+	// Addition to FF Extras override scripts so they go poof when the bridge is destroyed
+	EXTEND_BOTTOM ~BDFISTEX.BCS~ ~%mod_root%/scripts/sod_coastway_crossing_bdfistex.baf~
+	
+	// Don't want the sergeant and the scouts to appear if doing quest with the other FF
+	LAF ALTER_SCRIPT_BLOCK
+		INT_VAR
+			only_once = 1
+		STR_VAR
+			script = ~BDCUT16~
+			match = ~OpenDoor("force_wall_door")~
+			swap_out = ~True()~
+			swap_in = ~GlobalLT("#L_CWBridgeQuest","GLOBAL",98)~
+	END
+	LAF INSERT_SCRIPT_BLOCK
+		INT_VAR
+			only_once = 1
+		STR_VAR
+			script = ~BDCUT16~
+			match = ~OpenDoor("force_wall_door")~
+			insert = ~%mod_root%/scripts/sod_coastway_crossing_bdcut16.baf~
+	END
+END

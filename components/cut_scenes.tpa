@@ -1,0 +1,63 @@
+//////////////////////////////////////////////
+// Remove cut scenes not viewable by the PC //
+//////////////////////////////////////////////
+
+
+DEFINE_ACTION_FUNCTION cut_scenes BEGIN
+
+	ACTION_IF GAME_INCLUDES ~sod~ BEGIN
+		// Set required variables based on installed game
+		ACTION_IF GAME_IS ~eet~ BEGIN
+			OUTER_SET SOD_JOURNAL_01 = 259633
+		END ELSE BEGIN
+			OUTER_SET SOD_JOURNAL_01 = 59633
+		END
+
+		// Let other components know that cut scenes have been removed
+		// May be important for components that track what the PC knows
+		// #L_CutScenesRemoved
+		EXTEND_TOP ~BD0120.BCS~ ~%mod_root%/scripts/cut_scenes.baf~
+		EXTEND_TOP ~BD0103.BCS~ ~%mod_root%/scripts/cut_scenes.baf~ // In case they skip Korlasz
+
+		// Remove cut scenes that are started via dialogues
+		COMPILE EVALUATE_BUFFER ~%mod_root%/dialogues/sod_cut_scenes.d~
+
+		// Take out the scene with Irenicus, Caelar and Hephernaan
+		COPY_EXISTING ~BDCUT10.BCS~ ~override~
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~FadeToColor([0.0],0)~ ~~
+				REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~StartCutSceneEx("bdcut11",TRUE)~ ~MultiPlayerSync() FadeFromColor([20.0],0) EndCutSceneMode()~
+			END
+			
+		// Make sure Hephernaan's name doesn't show during scrying pool cut scene with the hooded man
+		// There has been no opportunity up to this point to link his name to his face
+		COPY_EXISTING ~BDHEPHER.CRE~ ~override/#LUAAgnt.cre~
+			SAY NAME1 @1007	/* ~Agent of the Umbral Accord~ */
+			SAY NAME2 @1007	/* ~Agent of the Umbral Accord~ */
+		COPY_EXISTING ~BDSCRY05.BCS~ ~override~
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~CreateCreature("bdhepher",[625.395],NW)~ ~CreateCreature("#LUAAgnt",[625.395],NW)~
+			END
+			
+		// Take out the scene with Hephernaan and Jayvis at the Coast Way bridge
+		COPY_EXISTING ~BD1000.BCS~ ~override~
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~StartCutSceneEx("bdcut15",TRUE)~ ~StartCutSceneEx("#LCSBD15",TRUE)~
+			END
+		COMPILE EVALUATE_BUFFER ~%mod_root%/scripts/#LCSBD15.baf~ USING ~%tra_loc%/%s/cut_scenes.tra~ // Shortened version of Coast Way Brige scene with Hephernaan and Jayvis
+		
+		// Take out the scene that shows Caelar writing condolence letters
+		COPY_EXISTING ~BD7100.BCS~ ~override~
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~StartCutSceneEx("bdcut20a",TRUE)~ ~FadeFromColor([20.0],0) EndCutSceneMode()~
+			END
+	END
+
+	ACTION_IF (GAME_IS ~bg2ee eet~) THEN BEGIN
+		// Let other components know that cut scenes have been removed
+		// May be important for components that track what the PC knows
+		EXTEND_TOP ~AR0602.BCS~ ~%mod_root%/scripts/cut_scenes.baf~
+		EXTEND_TOP ~AR0700.BCS~ ~%mod_root%/scripts/cut_scenes.baf~ // In case they skip Chateau Irenicus
+	END
+
+END

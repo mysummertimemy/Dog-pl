@@ -1,0 +1,130 @@
+///////////////////////////////////////////
+// IMOEN'S CUSTOM WAND OF MAGIC MISSILES //
+///////////////////////////////////////////
+@1000	= ~Imoen's Wand of Magic Missiles~
+@1001	= ~This wand looks like an ordinary wand of Magic Missiles, but there's something just a little different about it.  When activated, the wand will eject up to three missiles of magical energy that dart forth and unerringly strike their target. This includes enemy creatures in a melee. The target creature must be seen or otherwise detected to be hit, however, so near-total concealment, such as that offered by arrow slits, can render the spell ineffective. Each missile will inflict 1d4+1 points of damage.
+
+STATISTICS:
+
+Charge abilities:
+  Up to 3 magic missiles will strike the target
+  Damage: 1d4+1
+  Range: 100 ft.
+  Area of Effect: 1 creature
+
+Requires:
+ 9 Intelligence
+
+Weight: 1~
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// FOR BG2 IMOEN'S MAGIC MISSILE COMPONENT                                                //
+// POTION FOUND IN CHATEAU IRENICUS SO IMOEN CAN REFRESH HER MAGIC MISSILE BEFORE EXITING //
+////////////////////////////////////////////////////////////////////////////////////////////
+@1002	= ~Potion of Revitalization~
+@1003	= ~This inviting potion removes fatigue of the body and the mind.
+
+STATISTICS:
+
+Special: Remove fatigue
+Special: Regain cast spells~
+
+/////////////////////////////////////////////////////
+// COAST WAY CROSSING QUEST DISGUISED FLAMING FIST //
+/////////////////////////////////////////////////////
+@1004	= ~Disguised Flaming Fist Veteran~
+@1005	= ~Disguised Flaming Fist Battlemage~
+@1006	= ~Disguised Flaming Fist Healer~
+
+/////////////////////////////////////////////////////////////////
+// SCRYING POOL VERSION OF HEPHERNAAN FOR CUT SCENES COMPONENT //
+/////////////////////////////////////////////////////////////////
+@1007	= ~Agent of the Umbral Accord~
+
+///////////////////////////////////////////////////////////////////
+// UNIQUE ITEMS REDESCRIBING ITEMS THAT GET REUSED OVER AND OVER //
+///////////////////////////////////////////////////////////////////
+@1008	= ~Dagger +2~
+@1009	= ~This finely made dagger has few equals.  The enchantment placed on this excellent weapon makes it most dangerous in the right hands.
+
+STATISTICS:
+
+THAC0: +2
+Damage: 1d4+2 (piercing)
+Speed Factor: 1
+Proficiency Type: Dagger
+Type: One-handed
+Requires:
+ 3 Strength
+
+Weight: 1~
+
+@1010	= ~Plate Mail +1~
+@1011	= ~The enchantment on this finely crafted plate mail makes it some of the finest in the land.
+
+STATISTICS:
+
+Armor Class: 2 (-1 vs. slashing)
+Requires:
+ 12 Strength
+
+Weight: 50~
+
+@1012	= ~Belt of Slashing +2~
+@1013	= ~The enchantment on this stylish belt helps the wearer to fend off slashing attacks.
+
+STATISTICS:
+
+Equipped abilities:
+- Armor Class: +2 vs. slashing attacks
+
+Weight: 2~
+
+@1014	= ~Bastard Sword of Poison Protection +1~
+@1015	= ~This finely crafted bastard sword protects its wearer from poison.
+
+STATISTICS:
+
+Equipped abilities:
+- Immunity to poison
+
+THAC0: +1
+Damage: 2d4+3 (slashing)
+Speed Factor: 7
+Proficiency Type: Large Sword
+Type: One-handed
+Requires:
+ 11 Strength
+
+Weight: 8~
+
+//////////////////////////
+// Caelar Argent in BG1 //
+//////////////////////////
+@1016	= ~Charismatic Woman~
+
+//////////////////////////////////////////////////
+// A note to replace one used in Rasaad's quest //
+//////////////////////////////////////////////////
+@1017 = ~An agent of the most hated goddess has been observed in the area. It appears that he is alone, so killing him will be easy. Speak to a prospective acolyte named Sorrem. He will provide you with a description of your target. Seek out and slay this agent of Selune, and bring his body to the shrine. I will brook no failure, nor will the Mistress of the Night.
+
+A~
+
+
+////////////////////////////////////////////////////////////////////////
+// MORE UNIQUE ITEMS REDESCRIBING ITEMS THAT GET REUSED OVER AND OVER //
+////////////////////////////////////////////////////////////////////////
+@1018 = ~Scimitar +2~
+@1019 = ~The scimitar, or "shamshir" as it was originally called, has a single-edged blade with a significant curve and is tapered to an elongated, sharp point. It is perhaps slower than other weapons of the same type, though it compensates by the amount of damage it is capable of. This particular weapon has been enhanced magically to complement the skill of the wielder.
+
+STATISTICS:
+
+THAC0: +2
+Damage: 1d8+2 (slashing)
+Speed Factor: 4
+Proficiency Type: Large Sword
+Type: One-handed
+Requires:
+ 10 Strength
+
+Weight: 4~

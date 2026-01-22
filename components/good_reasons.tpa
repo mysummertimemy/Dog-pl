@@ -1,0 +1,154 @@
+///////////////////////////////////////////////
+// Give the PC good reasons to go into homes //
+///////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION good_reasons BEGIN
+	// BG1 specific changes
+	ACTION_IF (GAME_IS ~eet bgee~) THEN BEGIN
+		// Variables based upon installed game
+		ACTION_IF (GAME_IS ~eet~) THEN BEGIN
+			OUTER_SPRINT SND_CARBOS ~BGMAINME~
+			OUTER_SPRINT SND_SHANK ~BGMALE6E~
+			OUTER_SPRINT DLG_WIDOW ~FTOWN2_~
+			OUTER_SET SAY_RIFFRAFF = 203340
+			OUTER_SET SAY_7HEAVENS = 203341
+			OUTER_SET JOURNAL_JOIA = 227189
+		END ELSE BEGIN
+			OUTER_SPRINT SND_CARBOS ~MAINM11~
+			OUTER_SPRINT SND_SHANK ~MALE6E~
+			OUTER_SPRINT DLG_WIDOW ~FTOWN2~
+			OUTER_SET SAY_RIFFRAFF = 3340 
+			OUTER_SET SAY_7HEAVENS = 3341
+			OUTER_SET JOURNAL_JOIA = 27189
+		END
+	
+		// Give the Gatewarden a DV so I can put a string over his head
+		COPY_EXISTING ~GATEWA.CRE~ ~override~
+			WRITE_ASCII DEATHVAR ~GATEWA~ #32
+		
+		COPY_EXISTING ~%Beregost%.ARE~ ~override~
+			// Change the name of the door leading into BG3320
+			// or else we can't control it because it has the same name 
+			// as the travel trigger region
+			LPF CHANGE_DOOR_NAME
+				STR_VAR
+					old_name = ~Door3320~
+					new_name = ~Port3320~
+			END
+
+		COPY_EXISTING ~%Nashkel%.ARE~ ~override~
+			// Change the name of the doors leading into Joseph's house and the manor
+			// or else we can't control them because they have the same name 
+			// as the travel trigger regions
+			LPF CHANGE_DOOR_NAME
+				STR_VAR
+					old_name = ~Door4806~	// Joseph's house
+					new_name = ~Port4806~
+			END
+			LPF CHANGE_DOOR_NAME
+				STR_VAR
+					old_name = ~Door4804~	// Manor
+					new_name = ~Port4804~
+			END
+
+		COPY_EXISTING ~%EBaldursGate%.ARE~ ~override~
+			// Arkion's quest is now dependent upon charisma and rep (low is better)
+			// his house lock/unlock will need to be dynamic
+			LPF CHANGE_DOOR_NAME
+				STR_VAR
+					old_name = ~Door0805~	// Arkion's house
+					new_name = ~Port0805~
+			END
+		
+		COPY_EXISTING ~%BaldursGateDocks%.ARE~ ~override~
+			// Unlock Ogre Mages' door
+			// They want to kill the PC - why would they lock the door?
+			LPF UNLOCK_DOOR
+				STR_VAR
+					door_name = ~Door1201~
+			END
+		
+		COPY_EXISTING ~%CentralBaldursGate%.ARE~ ~override~
+			// Nadine's door
+			// She'll be advertising for help - no sense in having the door locked
+			LPF UNLOCK_DOOR
+				STR_VAR
+					door_name = ~Door0715~
+			END
+		
+		COPY_EXISTING ~%NWBaldursGate%.ARE~ ~override~
+			// Quinn's door
+			// He'll be advertising for help - no sense in having the door locked
+			LPF UNLOCK_DOOR
+				STR_VAR
+					door_name = ~Door0157~
+			END
+			
+		// Need a handle on Nadarin so if the party kills him/her, the help wanted sign comes down
+		COPY_EXISTING ~Nadari.cre~ ~override~
+			WRITE_ASCII DEATHVAR ~Nadari~ #32
+
+		// Need a handle on Noralee so if the party kills her, the help wanted sign comes down
+		COPY_EXISTING ~Norale.cre~ ~override~
+			WRITE_ASCII DEATHVAR ~Norale~ #32
+
+		EXTEND_TOP ~%Candlekeep%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg2600.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%FriendlyArmInn%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg2300.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%Beregost%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg3300.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%Nashkel%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg4800.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%EBaldursGate%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg0800.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%SEBaldursGate%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg1300.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%BaldursGateDocks%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg1200.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%SWBaldursGate%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg1100.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%CentralBaldursGate%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg0700.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%NWBaldursGate%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg0100.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%NBaldursGate%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg0200.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_TOP ~%UlgothsBeard%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg1000.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		
+		// Switch a timer inside the building where Wiven and Rasaad's quest happen to be global so I can see it outside the building
+		COPY_EXISTING ~%SWBaldursGate_WivensHouse_L1%.bcs~ ~override~
+			DECOMPILE_AND_PATCH BEGIN
+				REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~"%SWBaldursGate_WivensHouse_L1%"~ ~"GLOBAL"~
+			END
+
+		// Mirianne's initial dialogue is edited (by BG1NPC) to the point where I can't have it set a global reliably
+		// I'll use the room script instead - which may be empty so can't use extend...
+		LAF UPDATE_BCS
+			INT_VAR
+				action_taken = 1		// 0 = APPEND_FILE TEXT, 1 = EXTEND_TOP, 2 = EXTEND_BOTTOM
+			STR_VAR
+				baf_location = EVAL ~%mod_root%/scripts/~				// like ~mymod/bafs/~
+				baf_name = ~bg1_good_reasons_bg3313~					// like my_new_BG0146
+				bcs_name = EVAL ~%Beregost_MiriannesHouse_L1%~			// like BG0146
+		END
+		
+		// Rinnie's initial dialogue is edited (by BG1NPC) to the point where I can't have it set a global reliably
+		// I'll use the room script instead - which may be empty so can't use extend...
+		LAF UPDATE_BCS
+			INT_VAR
+				action_taken = 1		// 0 = APPEND_FILE TEXT, 1 = EXTEND_TOP, 2 = EXTEND_BOTTOM
+			STR_VAR
+				baf_location = EVAL ~%mod_root%/scripts/~				// like ~mymod/bafs/~
+				baf_name = ~bg1_good_reasons_bg0006~					// like my_new_BG0146
+				bcs_name = EVAL ~%NBaldursGate_RinniesHouse_L1%~		// like BG0146
+		END
+		
+		// Get rid of RE's books (Camryn) that are in places a good character would have to steal
+		// They're made available in other ways
+		EXTEND_BOTTOM ~%FriendlyArmInn_House%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg2305.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_BOTTOM ~%FriendlyArmInn_L3%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg2303.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		EXTEND_BOTTOM ~%Beregost_FirebeadsHouse_L2%.bcs~ ~%mod_root%/scripts/bg1_good_reasons_bg3334.baf~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+		
+		LAF UPDATE_BCS
+			INT_VAR
+				action_taken = 2		// 0 = APPEND_FILE TEXT, 1 = EXTEND_TOP, 2 = EXTEND_BOTTOM
+			STR_VAR
+				baf_location = EVAL ~%mod_root%/scripts/~		// like ~mymod/bafs/~
+				baf_name = "bg1_good_reasons_bg2215"			// like my_new_BG0146
+				bcs_name = EVAL "%CloakwoodLodgeHuntingLodge%"	// like BG0146
+		END
+		
+		COMPILE EVALUATE_BUFFER ~%mod_root%/dialogues/bg1_good_reasons.d~ USING ~%tra_loc%/%s/bg1_good_reasons.tra~
+	END
+	
+END

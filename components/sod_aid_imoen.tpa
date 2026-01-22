@@ -1,0 +1,21 @@
+////////////////////////////////////////////////////////////////
+// Allows PC to render aid to Imoen after Caelar Elite attack //
+////////////////////////////////////////////////////////////////
+
+DEFINE_ACTION_FUNCTION sod_aid_imoen BEGIN
+	// Modified sleep spell that makes it so they don't stand up when you run into them
+	// Unfortunately it won't polymorph her into a sleeping position
+	COPY ~%mod_root%/objects/#LSleep.SPL~ ~override~
+
+	COPY_EXISTING ~BD0103.BCS~ ~override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~XEquipItem("NOCIRCLE","IMOEN2",SLOT_RING_LEFT,EQUIP)~ ~~
+			// Keep the original spell in there so Imoen's Magic Wand component can find it
+			REPLACE_TEXTUALLY CASE_INSENSITIVE EXACT_MATCH ~ReallyForceSpellRES("bdgassa1","IMOEN2")~ ~ReallyForceSpellRES("bdgassa1","IMOEN2") ApplySpellRES("#LSLEEP","IMOEN2") ActionOverride("IMOEN2",SetSequence(SEQ_SLEEP))~
+		END
+	
+	APPEND ~spell.ids~ ~3102 INNATE_SLOW_POISON~ UNLESS ~INNATE_SLOW_POISON~ // dupe of INNATE_SLOW_POISON needed for BG:SoD
+
+	EXTEND_TOP ~BDIMOEN.BCS~ ~%mod_root%/scripts/sod_aid_imoen.baf~
+	COMPILE EVALUATE_BUFFER ~%mod_root%/dialogues/sod_aid_imoen.d~ USING ~%tra_loc%/%s/sod_aid_imoen.tra~
+END
