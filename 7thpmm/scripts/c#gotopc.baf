@@ -1,8 +1,0 @@
-IF
-	ActionListEmpty()
-	InMyArea(Player1)
-	!Range(Player1,15)
-THEN
-	RESPONSE #100
-		MoveToObject(Player1)
-END
