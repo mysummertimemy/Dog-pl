@@ -1,0 +1,14 @@
+///////////////////////////////////////////
+// Changes to Joia house FAI area script //
+///////////////////////////////////////////
+
+IF
+	Contains("TITome01","Container2")
+	Global("TICBOOK01_Spawn","MYAREA",1)
+	Global("#L_GRxRETome1","MYAREA",0)
+THEN
+	RESPONSE #100
+		SetGlobal("#L_GRxRETome1","MYAREA",1)
+		ActionOverride("Container2",DestroyItem("TITome01")) // Moved to Joia
+		Continue()
+END

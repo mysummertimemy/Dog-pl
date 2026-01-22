@@ -1,0 +1,156 @@
+//////////////////////////////////////
+// Coast Way Bridge Quest Cut Scene //
+// The charmed informant escapes    //
+//////////////////////////////////////
+
+IF
+	Global("#L_CWBridgeQuest","GLOBAL",5) // No prisoner
+	Global("#L_CWBridgePassword","GLOBAL",1) // Informant escapes
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+		
+		ApplySpellRES("bdunhide","BDCRUS11")
+		SmallWait(5)
+
+		MoveViewObject("BDCRUS11",INSTANT)
+		ActionOverride("BDCRUS11",MoveToPoint([3515.1265])
+		DisplayStringHead("BDCRUS11",@2126) // ~WAIT!  WAIT!  Don't let 'em pass!  They're Flaming Fist and that's the Hero with 'em!~
+		Wait(2)
+		
+		MoveViewObject(Player1,INSTANT)
+		DisplayStringHead(Player1,@2128) // ~Oh great, how'd she get loose?~
+		Wait(2)
+		
+		ApplySpellRES("#LUNHAST","BDCRUS11")
+
+		Continue()
+END
+
+IF
+	Global("#L_CWBridgeQuest","GLOBAL",6) // PC posing as prisoner
+	Global("#L_CWBridgePassword","GLOBAL",1) // Informant escapes
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+		
+
+		ApplySpellRES("bdunhide","BDCRUS11")
+		SmallWait(5)
+
+		MoveViewObject("BDCRUS11",INSTANT)
+		ActionOverride("BDCRUS11",MoveToPoint([3515.1265])
+		DisplayStringHead("BDCRUS11",@2127) // ~WAIT!  WAIT!  Don't let 'em pass!  That's the Flaming Fist with the Hero!~
+		Wait(2)
+		
+		MoveViewObject(Player1,INSTANT)
+		DisplayStringHead(Player1,@2128) // ~Oh great, how'd she get loose?~
+		Wait(2)
+
+		ApplySpellRES("#LUNHAST","BDCRUS11")
+
+		Continue()
+END
+
+IF
+	NumInParty(2)
+	OR(2)
+		Gender(Player2,MALE)
+		Gender(Player2,FEMALE)
+	IsValidForPartyDialogue(Player2)
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+
+		MoveViewObject(Player2,INSTANT)
+		SmallWait(5)
+		DisplayStringHead(Player2,@2129) // ~They're in trouble!  I'm coming!~
+
+		ActionOverride("#LFFAss1",MoveToPoint([3795.1045]))
+		ActionOverride("#LFFAss2",MoveToPoint([3845.1080]))
+		ActionOverride("#LFFAss3",MoveToPoint([3740.1130]))
+		ActionOverride(Player2,MoveToPoint([3815.1005]))
+
+		Wait(1)
+
+		Continue()
+END
+
+IF
+	NumInPartyGT(2)
+	OR(2)
+		Gender(Player2,MALE)
+		Gender(Player2,FEMALE)
+	IsValidForPartyDialogue(Player2)
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+
+		MoveViewObject(Player2,INSTANT)
+		SmallWait(5)
+		DisplayStringHead(Player2,@2130) // ~They're in trouble!  Let's go!
+
+		ActionOverride("#LFFAss1",MoveToPoint([3795.1045]))
+		ActionOverride("#LFFAss2",MoveToPoint([3845.1080]))
+		ActionOverride("#LFFAss3",MoveToPoint([3740.1130]))
+		ActionOverride(Player2,MoveToPoint([3815.1005]))
+		ActionOverride(Player3,MoveToPoint([3890.1095]))
+		ActionOverride(Player4,MoveToPoint([3790.1080]))
+		ActionOverride(Player5,MoveToPoint([3720.1045]))
+		ActionOverride(Player6,MoveToPoint([3795.1145]))
+
+		Wait(1)
+
+		Continue()
+END
+
+IF
+	NumInPartyGT(2)
+	!Gender(Player2,MALE)
+	!Gender(Player2,FEMALE)
+	OR(2)
+		Gender(Player3,MALE)
+		Gender(Player3,FEMALE)
+	IsValidForPartyDialogue(Player3)
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+
+		MoveViewObject(Player3,INSTANT)
+		SmallWait(5)
+		DisplayStringHead(Player3,@2130) // ~They're in trouble!  Let's go!
+
+		ActionOverride("#LFFAss1",MoveToPoint([3795.1045]))
+		ActionOverride("#LFFAss2",MoveToPoint([3845.1080]))
+		ActionOverride("#LFFAss3",MoveToPoint([3740.1130]))
+		ActionOverride(Player2,MoveToPoint([3815.1005]))
+		ActionOverride(Player3,MoveToPoint([3890.1095]))
+		ActionOverride(Player4,MoveToPoint([3790.1080]))
+		ActionOverride(Player5,MoveToPoint([3720.1045]))
+		ActionOverride(Player6,MoveToPoint([3795.1145]))
+
+		Wait(1)
+
+		Continue()
+END	
+
+IF
+	True()
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+		
+		// Get the FF battle scripts in place
+		ActionOverride("#LFFAss1",ChangeAIScript("BDFIST",CLASS))
+		ActionOverride("#LFFAss1",ChangeAIScript("BDSHOUT",RACE))
+		ActionOverride("#LFFAss1",ChangeAIScript("BDFIGH27",GENERAL))
+		ActionOverride("#LFFAss2",ChangeAIScript("BDFIST",CLASS))
+		ActionOverride("#LFFAss2",ChangeAIScript("BDSHOUT",RACE))
+		ActionOverride("#LFFAss2",ChangeAIScript("BDCLER22",GENERAL))
+		ActionOverride("#LFFAss3",ChangeAIScript("BDFIST",CLASS))
+		ActionOverride("#LFFAss3",ChangeAIScript("BDSHOUT",RACE))
+		ActionOverride("#LFFAss3",ChangeAIScript("BDMAGE25",GENERAL))		
+
+		SetGlobal("bd_plot","global",156)
+		StartCutSceneEx("bdcut14",TRUE)
+END

@@ -1,0 +1,29 @@
+///////////////////////////////////////////////////////////
+// Opens the force door after the fight is over          //
+// But doesn't spawn the FF standing outside the barrier //
+///////////////////////////////////////////////////////////
+
+IF
+	GlobalGT("#L_CWBridgeQuest","GLOBAL",97)
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+		CreateVisualEffect("SPFLESHS",[3540.1135])
+		CreateVisualEffect("SPFLESHS",[3625.1195])
+		SmallWait(5)
+		AmbientActivate("force_wall",FALSE)
+		OpenDoor("force_wall_door")
+		CreateCreature("bdbence",[465.3555],NE)  // Bence Duncan
+END
+
+IF
+	GlobalGT("#L_CWBridgeQuest","GLOBAL",97)
+	!InPartyAllowDead("CORWIN")
+THEN
+	RESPONSE #100
+		CutSceneId(Player1)
+
+		ActionOverride("CORWIN",JumpToPoint([3430.1265]))
+		ActionOverride("CORWIN",Face(NE))
+END
+

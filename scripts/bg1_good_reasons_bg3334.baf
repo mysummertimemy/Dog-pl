@@ -1,0 +1,15 @@
+/////////////////////////////////////////////////////////////////
+// Changes to 2nd floor of Firebead house Beregost area script //
+/////////////////////////////////////////////////////////////////
+
+IF
+	Contains("TITOME04","Container2")
+	Global("TICBOOK04_Spawn","MYAEA",1)
+	Global("#L_GRxRETome4","MYAEA",0)
+THEN
+	RESPONSE #100
+		SetGlobal("#L_GRxRETOME4","MYAEA",1)
+		ActionOverride("Container2",DestroyItem("TITome04")) // Moved to Firebead
+		Continue()
+END
+

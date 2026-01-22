@@ -1,0 +1,139 @@
+BACKUP ~weidu_external/backup/themed_tweaks~
+SUPPORT ~~
+VERSION ~v2 pre~
+
+README ~themed_tweaks/readme.themed_tweaks_v2.%LANGUAGE%.txt~ ~themed_tweaks/readme.themed_tweaks_v2.english.txt~
+
+ALWAYS
+	ACTION_IF !VARIABLE_IS_SET deja_vu BEGIN
+		// Global static variables used by WeiDU
+		OUTER_SPRINT mod_root "themed_tweaks"
+		OUTER_SPRINT external_loc "weidu_external"
+		OUTER_SPRINT tra_base "languages"
+		OUTER_SPRINT base_language "american"
+		OUTER_SPRINT workspace "%external_loc%/workspace/%mod_root%"
+		OUTER_SPRINT tra_loc "%workspace%/%tra_base%"
+
+		// Makes external working directories	
+		// And copies language files to them
+		INCLUDE ~%mod_root%/lib/run_once.tpa~
+		LAF DO_RUN_ONCE END
+
+		// Variables used to point to files and stuff
+		INCLUDE ~%mod_root%/lib/#l_cmpvars.tpa~
+
+		// Library functions I use frequently
+		INCLUDE ~%mod_root%/lib/alter_script.tpa~
+		INCLUDE ~%mod_root%/lib/update_bcs.tpa~
+		INCLUDE ~%mod_root%/lib/areas.tpa~
+		INCLUDE ~%mod_root%/lib/items.tpa~
+	END
+
+	// This needs to be run before every component for some reason
+	// It has something to do with languages that use a different character set
+	ACTION_DEFINE_ARRAY thismod_noconvert BEGIN setup END
+	ACTION_DEFINE_ARRAY thismod_reload BEGIN game cases END
+
+	LAF HANDLE_CHARSETS 
+		INT_VAR 
+			infer_charsets = 1 
+		STR_VAR 
+			iconv_path = EVAL "%mod_root%/%tra_base%/iconv"
+			tra_path = EVAL "%tra_loc%"
+			noconvert_array = thismod_noconvert
+			reload_array = thismod_reload
+	END
+
+	ACTION_IF ((FILE_EXISTS ~dlc/sod-dlc.zip~) OR (FILE_EXISTS ~sod-dlc.zip~)) THEN BEGIN
+		FAIL @1 /* ~Modmerge or Argent's DLC Merger is required before mods can be installed on this game.~ */
+	END
+	ACTION_IF ((NOT GAME_IS ~bgee bg2ee eet~) AND (NOT GAME_INCLUDES ~sod~)) BEGIN
+		FAIL @2 /* ~This mod requires BG1EE, SoD, BG2EE or EET~ */
+	END
+
+	ACTION_IF !VARIABLE_IS_SET deja_vu BEGIN
+		// This actually installs changes to a 2da file so want it to run after the game check
+		INCLUDE ~%mod_root%/lib/cases.tpa~
+		LAF INSTALL_PROPER_CASES END
+
+		OUTER_SET deja_vu = 1
+	END
+END
+
+LANGUAGE ~American English~ ~american~   
+	~themed_tweaks/languages/american/game.tra~
+	~weidu_external/workspace/themed_tweaks/languages/american/game.tra~
+	~themed_tweaks/languages/american/setup.tra~
+	~weidu_external/workspace/themed_tweaks/languages/american/setup.tra~
+	~themed_tweaks/languages/american/cases.tra~
+	~weidu_external/workspace/themed_tweaks/languages/american/cases.tra~
+
+///////////////////////////////////////////////////////////////////
+// GIVE GOOD ALIGNED CHARACTERS A REASON TO ENTER PEOPLES' HOMES //
+///////////////////////////////////////////////////////////////////
+BEGIN @10
+	DESIGNATED 10
+	LABEL "#L-BG1-GOOD_REASONS"
+	LABEL "#L-BG2-GOOD_REASONS"
+	INCLUDE ~themed_tweaks/components/good_reasons.tpa~
+	LAF good_reasons END
+
+/////////////////////////////////////////////
+// FIX CUT SCENES THAT REARRANGE THE GROUP //
+/////////////////////////////////////////////
+BEGIN @20
+	DESIGNATED 20
+	LABEL "#L-BG1-FIX_ARRANGEMENTS"
+	LABEL "#L-SOD-FIX_ARRANGEMENTS"
+	LABEL "#L-BG2-FIX_ARRANGEMENTS"
+	INCLUDE ~themed_tweaks/components/fix_arrangements.tpa~
+	LAF fix_arrangements END
+	
+////////////////////////////////////////
+// MAKE SURE UNIQUE ITEMS STAY UNIQUE //
+////////////////////////////////////////
+BEGIN @25
+	DESIGNATED 25
+	LABEL "#L-BG1-UNIQUE_ITEMS"
+	LABEL "#L-SOD-UNIQUE_ITEMS"
+	LABEL "#L-BG2-UNIQUE_ITEMS"
+	LABEL "#L-EET-UNIQUE_ITEMS"
+	INCLUDE ~themed_tweaks/components/unique_items.tpa~
+ 	LAF unique_items END
+
+///////////////////////////////////////////
+// ALLOW RASAAD'S QUEST BEFORE CHAPTER 5 //
+///////////////////////////////////////////
+BEGIN @27
+	DESIGNATED 27
+	LABEL "#L-BG1-RASAADS_QUEST"
+	INCLUDE ~themed_tweaks/components/bg1_rasaad.tpa~
+	LAF bg1_rasaad END
+
+///////////////////////////////////////////////
+// CAELAR ARGENTS ATTEMPTS TO RECRUIT THE PC //
+///////////////////////////////////////////////
+BEGIN @30
+	DESIGNATED 30
+	LABEL "#L-BG1-CAELAR"
+	INCLUDE ~themed_tweaks/components/bg1_caelar.tpa~
+	LAF bg1_caelar END
+
+/////////////////////////////////////////////////////
+// ALLOW DORN TO JOIN HEROIC GROUP FOR HIS REVENGE //
+/////////////////////////////////////////////////////
+BEGIN @40
+	DESIGNATED 40
+	LABEL "#L-BG1-DORNS_REVENGE"
+	INCLUDE ~themed_tweaks/components/bg1_dorn.tpa~
+	LAF bg1_dorn END
+	
+///////////////////////////////////////////////////////
+// REMOVE ERRANT REFERENCES TO PC BEING A BHAALSPAWN //
+///////////////////////////////////////////////////////
+BEGIN @50
+	DESIGNATED 50
+	LABEL "#L-BG1-BHAALSPAWN_REF"
+	LABEL "#L-SOD-BHAALSPAWN_REF"
+	INCLUDE ~themed_tweaks/components/bhaalspawn_ref.tpa~
+	LAF bhaalspawn_ref END
